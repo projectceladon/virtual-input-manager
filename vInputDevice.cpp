@@ -161,7 +161,7 @@ int vInputDevice::openSourceDev()
 
 int vInputDevice::openUinputDev()
 {
-    if ((ufd = open("/dev/uinput", O_WRONLY)) < 0) {
+    if ((ufd = open("/dev/uinput", O_WRONLY | O_SYNC)) < 0) {
         cout << "Failed to open uinput device" << endl;
         return -1;
     }
@@ -331,7 +331,7 @@ static void sendKeyThread(vInputDevice *vD)
 static void realDeviceThread(vInputDevice *vD)
 {
     struct pollfd pfd[MAX_DEV] = {};
-    struct input_event event = {};
+    struct input_event evBuf[10] = {};
     int cnt = vD->sourceDev->count;
     int res = 0;
 
@@ -348,13 +348,28 @@ static void realDeviceThread(vInputDevice *vD)
 
         for (int i = 0; i < cnt; i++)
             if (pfd[i].revents & POLLIN) {
-                res = read(pfd[i].fd, &event, sizeof(event));
-                if (res < static_cast<int>(sizeof(event))) {
-                    cout << "could not get event" << endl;
-                    continue;
-                }
+                int j = 0;
+                while (true) {
+                    res = read(pfd[i].fd, &evBuf[j], sizeof(input_event));
+                    if (res < 0) {
+                        cout << "could not get event" << endl;
+                        break;
+                    }
 
-                vD->sendEvent(event.type, event.code, event.value);
+                    if ((!evBuf[j].type) && (!evBuf[j].code) &&
+                                        (!evBuf[i].value)) {
+                        for (int k = 0; k <= j; k++) {
+                            vD->sendEvent(evBuf[k].type, evBuf[k].code,
+                                                    evBuf[k].value);
+                            usleep(50);
+                        }
+
+                        system("sync");
+                        j = 0;
+                        continue;
+                    }
+                    j++;
+                }
             }
     }
 }
