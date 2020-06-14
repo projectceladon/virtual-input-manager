@@ -22,11 +22,10 @@
 
 class vInputManager {
  public:
-    int checkDeviceExist(const char *);
-    void processInputDevice(int);
-    void processVirtualInputDevice();
+    int checkDeviceExist(string);
+    void processInputDevice(uint16_t);
     void getDevInfo(const char *, struct device *);
-    struct device *dev;
+    int getDevices(unsigned, struct device *);
     int devCnt;
 };
 #endif  /*VINPUTMANAGER_H_*/

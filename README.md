@@ -10,18 +10,18 @@ Compile:
 Follow below steps to check volume and power button functionality in CIV
 ========================================================================
 Step 1:
-        1.1 Copy the vinput-manager and send-key files into ~/caas folder
-        1.2 $cd ~/caas/
+        1.1 Copy the vinput-manager and send-key files into ~/civ folder
+        1.2 $cd ~/civ/
         1.3 $chmod +x vinput-manager send-key
 
 Step 2: launch vinput-manager
     $sudo ./vinput-manager
 
 Step 3:
-    3.1. add below two lines under common_options variable in start_android_qcow2.sh
+    3.1. add below two lines under common_options variable in start_android_qcow2.sh script.
           -device virtio-input-host-pci,evdev=/dev/input/by-id/Power-Button-vm0 \
-          -device virtio-input-host-pci,evdev=/dev/input/by-id/Virtual-Volume-Button \
-    3.2. Launch CIV. sudo ./start_android_qcow2.sh
+          -device virtio-input-host-pci,evdev=/dev/input/by-id/Volume-Button-vm0 \
+    3.2. Launch CIV. $sudo ./scripts/start_android_qcow2.sh
 
 Step 4:
     Run send-key application to verify volume and power key functionality in android
