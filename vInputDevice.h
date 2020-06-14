@@ -20,7 +20,7 @@
 
 #include <string>
 
-#define MAX_DEV 20
+#define MAX_DEV 30
 
 using namespace std;
 
@@ -31,24 +31,22 @@ struct device {
 
 class vInputDevice{
  public:
-    int createInputDevice(const char *);
+    int createInputDevice(uint16_t);
     int createSymLink();
     void pollAndPushEvents();
-    int createVolumeDevice();
     void sendEvent(uint16_t, uint16_t, int32_t);
-    struct device *sourceDev;
     int getMsgQ();
     int type;
     int fd[MAX_DEV];  /*fd for source /dev/input/eventX file*/
+    struct device sourceDev;
 
  private:
-    char devName[30];  /*source device name*/
     string uInputName;  /*virtual input device name*/
-    string sLinkPath;  /*softlink path*/
+    string softLinkPath;  /*softlink path*/
     int ufd;  /*fd for uinput device*/
+    bool virt;
+    int getDevices(uint16_t, struct device *);
     int openSourceDev();
     int openUinputDev();
-    int setDevName();
-    int configureUinputDev();
 };
 #endif  /*VINPUTDEVICE_H_*/

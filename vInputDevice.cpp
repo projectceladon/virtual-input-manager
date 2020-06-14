@@ -34,124 +34,46 @@
 #include "sendKey.h"
 #include "vInputDevice.h"
 
-int vInputDevice::createVolumeDevice()
+int vInputDevice::getDevices(uint16_t keyCode, struct device *dev)
 {
-    struct uinput_setup usetup = {};
-    struct input_id uid  = {};
-    const char btnName[] =  "Virtual-Volume-Button";
+    dev->count = 0;
+    for (int i = 0; i < MAX_DEV; i++) {
+        int fd = 0, res = 0;
+        unsigned int k = 0;
+        char devPath[70] = " ";
 
-    openUinputDev();
-    snprintf(devName, sizeof(devName), btnName);
-    uInputName = devName;
-    type = VOLUME;
-    memset(&uid, 0, sizeof(struct input_id));
-    memset(&usetup, 0, sizeof(usetup));
-    usetup.id = uid;
-    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, btnName);
-    ioctl(ufd, UI_SET_EVBIT, EV_KEY);
-    ioctl(ufd, UI_SET_EVBIT, EV_MSC);
-    ioctl(ufd, UI_SET_KEYBIT, KEY_VOLUMEDOWN);
-    ioctl(ufd, UI_SET_KEYBIT, KEY_VOLUMEUP);
-    ioctl(ufd, UI_SET_MSCBIT, MSC_SCAN);
-    ioctl(ufd, UI_DEV_SETUP, &usetup);
-    ioctl(ufd, UI_DEV_CREATE);
-
-    return 0;
-}
-
-int vInputDevice::configureUinputDev()
-{
-    ssize_t bits_size = 0;
-    unsigned setbittype = 0, nosetbittype = 0;
-    int res = 0;
-    uint8_t *bits = NULL;
-
-    for (int i = EV_KEY; i <= EV_MAX; i++) {
-        while (true) {
-            res = ioctl(fd[0], EVIOCGBIT(i, bits_size), bits);
-            if (res < bits_size)
-                break;
-            bits_size = res + 16;
-            bits = reinterpret_cast<uint8_t *>(realloc(bits, bits_size * 2));
-            if (bits == NULL)
-                err(1, "failed to allocate buffer of size %d\n",
-                                   static_cast<int>(bits_size));
-        }
-
-        switch (i) {
-        case EV_KEY:
-            ioctl(fd[0], EVIOCGKEY(res), bits + bits_size);
-            setbittype = UI_SET_KEYBIT;
-            break;
-        case EV_REL:
-            setbittype = UI_SET_RELBIT;
-            break;
-        case EV_ABS:
-            setbittype = UI_SET_ABSBIT;
-            break;
-        case EV_MSC:
-            setbittype = UI_SET_MSCBIT;
-            break;
-        case EV_LED:
-            ioctl(fd[0], EVIOCGLED(res), bits + bits_size);
-            setbittype = UI_SET_LEDBIT;
-            break;
-        case EV_SND:
-            ioctl(fd[0], EVIOCGSND(res), bits + bits_size);
-            setbittype = UI_SET_SNDBIT;
-            break;
-        case EV_SW:
-            ioctl(fd[0], EVIOCGSW(bits_size), bits + bits_size);
-            setbittype = UI_SET_SWBIT;
-            break;
-        case EV_REP:
-            nosetbittype = 1;
-            break;
-        case EV_FF:
-            setbittype = UI_SET_FFBIT;
-            break;
-        case EV_PWR:
-            nosetbittype = 1;
-            break;
-        case EV_FF_STATUS:
-            setbittype = UI_SET_FFBIT;
-            break;
-        }
-
-        if (nosetbittype)
+        snprintf(devPath, sizeof(devPath), "/dev/input/event%d", i);
+        fd = open(devPath, O_RDONLY);
+        if (fd < 0)
             continue;
 
-        int flag = 0;
-        for (int j = 0; j < res; j++) {
-            for (int k = 0; k < 8; k++)
-                if (bits[j] & 1 << k) {
-                    if (!flag) {
-                        ioctl(ufd, UI_SET_EVBIT, EV_FF_STATUS);
-                        flag = 1;
-                    }
+        res = ioctl(fd, EVIOCGBIT(0, sizeof(k)), &k);
+        if (res < 0)
+            continue;
 
-                    ioctl(ufd, UI_SET_EVBIT, i);
-                    ioctl(ufd, setbittype, (j*8+k));
-                    if (i == EV_ABS) {
-                        struct input_absinfo abs = {};
-                        if (ioctl(fd[0], EVIOCGABS(j * 8 + k), &abs) == 0) {
-                            //Fix, Add ABS info
-                        }
-                    }
-                }
+        if (k & (1 << EV_KEY)) {
+            const ssize_t keyBitsSize = (KEY_MAX / 8) + 1;
+            uint8_t keyBits[keyBitsSize] = {};
+
+            res = ioctl(fd, EVIOCGBIT(EV_KEY, keyBitsSize), keyBits);
+            if (res < 0)
+                continue;
+
+            if (keyBits[keyCode/8] & (1 << (keyCode % 8))) {
+                dev->path[dev->count] = "/dev/input/event" + to_string(i);
+                dev->count++;
+            }
         }
-        nosetbittype = 0;
+        close(fd);
     }
 
-    free(bits);
-
-    return 0;
+    return dev->count;
 }
 
 int vInputDevice::openSourceDev()
 {
-    for (int i = 0; i < sourceDev->count; i++) {
-        const char *devPath = sourceDev->path[i].c_str();
+    for (int i = 0; i < sourceDev.count; i++) {
+        const char *devPath = sourceDev.path[i].c_str();
         if ((fd[i] = open(devPath, O_RDONLY | O_CLOEXEC)) < 0)
             return -1;
     }
@@ -169,49 +91,53 @@ int vInputDevice::openUinputDev()
     return 0;
 }
 
-int vInputDevice::setDevName()
-{
-    devName[sizeof(devName) - 1] = '\0';
-    if (ioctl(fd[0], EVIOCGNAME(sizeof(devName) - 1), &devName) < 1) {
-        devName[0] = '\0';
-        return -1;
-    }
-
-    return 0;
-}
-
-int vInputDevice::createInputDevice(const char *vmDev)
+int vInputDevice::createInputDevice(uint16_t keyCode)
 {
     struct input_id uid = {};
     struct uinput_setup usetup = {};
+
+    if (!getDevices(keyCode, &sourceDev))
+        virt = true;
+    else
+        virt = false;
 
     if (openUinputDev() < 0) {
         cout << "Failed to open uinput device" << endl;
         return -1;
     }
 
-    if (openSourceDev() < 0) {
-        cout << "Failed to open source device" << endl;
-        return -1;
+    if (!virt) {
+        if (openSourceDev() < 0) {
+            cout << "Failed to open source device" << endl;
+            return -1;
+        }
     }
 
-    setDevName();
-    if (configureUinputDev() != 0) {
-        cout << "Failed to set bits" << endl;
+    ioctl(ufd, UI_SET_EVBIT, EV_KEY);
+    switch (keyCode) {
+    case KEY_POWER:
+        uInputName = "Power Button vm0";
+        type = POWER;
+        ioctl(ufd, UI_SET_KEYBIT, KEY_POWER);
+        break;
+    case KEY_VOLUMEDOWN:
+    case KEY_VOLUMEUP:
+        uInputName = "Volume Button vm0";
+        type = VOLUME;
+        ioctl(ufd, UI_SET_KEYBIT, KEY_VOLUMEDOWN);
+        ioctl(ufd, UI_SET_KEYBIT, KEY_VOLUMEUP);
+        break;
+    default:
         return -1;
     }
 
     memset(&uid, 0, sizeof(struct input_id));
     memset(&usetup, 0, sizeof(usetup));
     usetup.id = uid;
-    uInputName = devName;
-    uInputName.append("-");
-    uInputName.append(vmDev);
-    type = POWER;  /*Fix Hard code value*/
     snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "%s", uInputName.c_str());
     ioctl(ufd, UI_DEV_SETUP, &usetup);
-    ioctl(ufd, UI_DEV_SETUP, &usetup);
     ioctl(ufd, UI_DEV_CREATE);
+
     return 0;
 }
 
@@ -221,8 +147,8 @@ int vInputDevice::createSymLink()
         char name[100] = " ";
         string str;
         ifstream infile;
-        snprintf(name, sizeof(name), "/sys/class/input/event%d/device/name",
-                                                                        i);
+
+        snprintf(name, sizeof(name), "/sys/class/input/event%d/device/name", i);
         infile.open(name);
         if (!infile.is_open())
             continue;
@@ -231,13 +157,13 @@ int vInputDevice::createSymLink()
         if (!strncmp(str.c_str(), uInputName.c_str(), str.size() + 1)) {
             char cmd[150];
 
-            sLinkPath = "/dev/input/by-id/";
-            snprintf(cmd, sizeof(cmd), "mkdir -p %s", sLinkPath.c_str());
+            softLinkPath = "/dev/input/by-id/";
+            snprintf(cmd, sizeof(cmd), "mkdir -p %s", softLinkPath.c_str());
             system(cmd);
-            sLinkPath.append(uInputName);
-            std::replace(sLinkPath.begin(), sLinkPath.end(), ' ', '-');
+            softLinkPath.append(uInputName);
+            std::replace(softLinkPath.begin(), softLinkPath.end(), ' ', '-');
             snprintf(cmd, sizeof(cmd), "ln -sf /dev/input/event%d %s",
-                                            i, sLinkPath.c_str());
+                                            i, softLinkPath.c_str());
             system(cmd);
             return 0;
         }
@@ -332,7 +258,7 @@ static void realDeviceThread(vInputDevice *vD)
 {
     struct pollfd pfd[MAX_DEV] = {};
     struct input_event evBuf[10] = {};
-    int cnt = vD->sourceDev->count;
+    int cnt = vD->sourceDev.count;
     int res = 0;
 
     for (int i = 0; i < cnt; i++) {
@@ -376,8 +302,12 @@ static void realDeviceThread(vInputDevice *vD)
 
 void vInputDevice::pollAndPushEvents()
 {
-    thread sK(sendKeyThread, this);
-    thread rD(realDeviceThread, this);
-    sK.join();
-    rD.join();
+    if (virt) {
+        sendKeyThread(this);
+    } else {
+        thread sK(sendKeyThread, this);
+        thread rD(realDeviceThread, this);
+        sK.join();
+        rD.join();
+    }
 }
