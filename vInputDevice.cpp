@@ -36,7 +36,12 @@
 
 int vInputDevice::getDevices(uint16_t keyCode, struct device *dev)
 {
+    const ssize_t keyBitsSize = (KEY_MAX / 8) + 1;
+
     dev->count = 0;
+    if((keyCode / 8) >= keyBitsSize)
+        return dev->count;
+
     for (int i = 0; i < MAX_DEV; i++) {
         int fd = 0, res = 0;
         unsigned int k = 0;
@@ -48,16 +53,19 @@ int vInputDevice::getDevices(uint16_t keyCode, struct device *dev)
             continue;
 
         res = ioctl(fd, EVIOCGBIT(0, sizeof(k)), &k);
-        if (res < 0)
+        if (res < 0) {
+            close(fd);
             continue;
+        }
 
         if (k & (1 << EV_KEY)) {
-            const ssize_t keyBitsSize = (KEY_MAX / 8) + 1;
             uint8_t keyBits[keyBitsSize] = {};
 
             res = ioctl(fd, EVIOCGBIT(EV_KEY, keyBitsSize), keyBits);
-            if (res < 0)
+            if (res < 0) {
+                close(fd);
                 continue;
+            }
 
             if (keyBits[keyCode/8] & (1 << (keyCode % 8))) {
                 dev->path[dev->count] = "/dev/input/event" + to_string(i);
