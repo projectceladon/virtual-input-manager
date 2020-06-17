@@ -31,6 +31,8 @@ struct device {
 
 class vInputDevice{
  public:
+    vInputDevice();
+    ~vInputDevice();
     int createInputDevice(uint16_t);
     int createSymLink();
     void pollAndPushEvents();
@@ -44,6 +46,7 @@ class vInputDevice{
     string uInputName;  /*virtual input device name*/
     string softLinkPath;  /*softlink path*/
     int ufd;  /*fd for uinput device*/
+    int mqId;
     bool virt;
     int getDevices(uint16_t, struct device *);
     int openSourceDev();

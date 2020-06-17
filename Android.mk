@@ -12,7 +12,7 @@ include $(BUILD_EXECUTABLE)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := send-key
+LOCAL_MODULE := sendkey
 
 LOCAL_SRC_FILES := sendKey.cpp
 

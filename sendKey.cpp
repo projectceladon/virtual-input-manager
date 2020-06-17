@@ -24,10 +24,10 @@ using namespace std;
 
 static string helpMsg =
     "Usage: \n./sendkey --vm <0, 1, 2….n> --volume <up/down>\n"\
-    "./send-key --vm <0, 1, 2….n> --power <delay in seconds>\n"\
+    "./sendkey --vm <0, 1, 2….n> --power <delay in seconds>\n"\
     "Example:\n\t./sendkey --vm 0 --volume up\n"\
-    "\t./send-key --vm 0 --volume down\n"\
-    "\t./send-key --vm 0 --power 1";
+    "\t./sendkey --vm 0 --volume down\n"\
+    "\t./sendkey --vm 0 --power 0";
 
 static void usage()
 {
@@ -91,7 +91,6 @@ static void sendVolumeEvent(int32_t ctrl)
 static void parseArgs(uint32_t *button, int32_t *bCtrl, char **argv)
 {
     if (!strncmp(reinterpret_cast<const char *>(argv[3]), "--volume", 9)) {
-        cout << "voulme button" << endl;
         *button = VOLUME;
         if (!strncmp(argv[4], "up", 3))
             *bCtrl = UP;

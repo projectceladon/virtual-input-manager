@@ -31,6 +31,6 @@ struct mQData {
     unsigned bCtrl;
 };
 
-enum button {POWER, VOLUME};
+enum button {POWER = 1, VOLUME};
 enum volumeButtonControl {UP, DOWN};
 #endif  /*SENDKEY_H_*/
