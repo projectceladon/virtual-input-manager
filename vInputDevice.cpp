@@ -34,6 +34,31 @@
 #include "sendKey.h"
 #include "vInputDevice.h"
 
+vInputDevice::vInputDevice()
+{
+    type = 0;
+    ufd = 0;
+    mqId = 0;
+}
+
+vInputDevice::~vInputDevice()
+{
+    if (ufd > 0)
+        close(ufd);
+
+    for (int i = 0; i < sourceDev.count; i++)
+        if (fd[i] > 0)
+            close(fd[i]);
+
+    if (mqId > 0) {
+        msgctl(mqId, IPC_RMID, NULL);
+        if (type == POWER)
+            system("rm " POWER_BUTTON_FILE_PATH);
+        else if (type == VOLUME)
+            system("rm " VOLUME_BUTTON_FILE_PATH);
+    }
+}
+
 int vInputDevice::getDevices(uint16_t keyCode, struct device *dev)
 {
     const ssize_t keyBitsSize = (KEY_MAX / 8) + 1;
@@ -104,10 +129,14 @@ int vInputDevice::createInputDevice(uint16_t keyCode)
     struct input_id uid = {};
     struct uinput_setup usetup = {};
 
+#if defined(ENABLE_HWKEY_EVENTS)
     if (!getDevices(keyCode, &sourceDev))
         virt = true;
     else
         virt = false;
+#else
+    virt = true;
+#endif
 
     if (openUinputDev() < 0) {
         cout << "Failed to open uinput device" << endl;
@@ -151,7 +180,7 @@ int vInputDevice::createInputDevice(uint16_t keyCode)
 
 int vInputDevice::createSymLink()
 {
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < MAX_DEV; i++) {
         char name[100] = " ";
         string str;
         ifstream infile;
@@ -195,7 +224,6 @@ void vInputDevice::sendEvent(uint16_t type, uint16_t code, int32_t value)
 int vInputDevice::getMsgQ()
 {
     key_t key = 0;
-    int mqId = -1;
 
     if (type == POWER) {
         system("touch " POWER_BUTTON_FILE_PATH);
@@ -215,6 +243,15 @@ int vInputDevice::getMsgQ()
             system("rm " VOLUME_BUTTON_FILE_PATH);
             return -1;
         }
+    }
+
+    /*
+     * Clean up message queue buffer
+     */
+    struct mQData data = {};
+    int n = 1;
+    while (n > 0) {
+        n = msgrcv(mqId, &data, sizeof(struct mQData), 1, IPC_NOWAIT);
     }
 
     return mqId;

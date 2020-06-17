@@ -63,7 +63,11 @@ void vInputManager::processInputDevice(uint16_t keyCode)
         exit(0);
     }
 
-    vD.createSymLink();
+    if (vD.createSymLink() < 0) {
+        cout << "Failed to create softlink device" << endl;
+        exit(0);
+    }
+
     int pid = fork();
     if (!pid) {
         vD.pollAndPushEvents();
