@@ -10,7 +10,7 @@ Compile:  <br>
   *  $make<br>
   *  Compilation generates vinput-manager & sendkey executables.<br><br>
 
-# Follow below steps to check volume and power button functionality in CIV
+# Follow below steps to check volume and power button functionality in CIV-GVTG
 
 Step 1:
   *  Copy the vinput-manager and sendkey files into ~/civ/scripts directory  <br>
@@ -37,3 +37,41 @@ Step 4:
 
 Note:<br>
   1. Use sendkey application only after launching CIV.<br>
+
+
+# Follow below steps to check volume and power button functionality in CIV-GVTD
+
+Step 1: Copy the vinput-manager and sendkey files into ~/civ/scripts folder <br>
+  *  $cd ~/civ/scripts <br>
+  *  $chmod +x vinput-manager sendkey <br>
+
+Step 2: Set the device in multi-user target mode. <br> 
+  *  $sudo systemctl set-default multi-user.target <br>
+
+Step 3: Update logind.conf file with "HandlePowerKey=ignore" and reboot device <br>
+  *  $sudo vim /etc/systemd/logind.conf <br>
+        [Login] <br>
+        HandlePowerKey=ignore <br>
+  *  $sudo reboot
+
+Step 4: Launch vinput-manager <br>
+  *  $sudo ./vinput-manager --gvtd <br>
+
+Step 5:<br>
+  *  Add below 3 lines under common_options variable in start_android_qcow2.sh script. <br>
+           -device virtio-input-host-pci,evdev=/dev/input/by-id/Power-Button-vm0 \    <br>
+           -device virtio-input-host-pci,evdev=/dev/input/by-id/Volume-Button-vm0 \   <br>
+           -qmp unix:./qmp-vinput-sock,server,nowait \ <br>
+
+  *  Launch CIV: $sudo ./scripts/start_android_qcow2.sh --gvtd <br>
+
+Step 6: Run sendkey application to verify volume and power key functionality in android <br>
+  *  Volume Functionality:<br>
+            ./sendkey --vm 0 --volume up => Increases volume in CIV<br>
+            ./sendkey --vm 0 --volume down  => decreases volume in CIV<br>
+  *  Power Functionality:<br>
+            ./sendkey --vm 0 --power 0  => Suspend/Resume in CIV<br>
+            ./sendkey –vm 0 –power 5    => long press of power key for 5 seconds. Displays power options in android. <br>
+
+Note:<br>
+    1. Use sendkey application after launching CIV.<br>
