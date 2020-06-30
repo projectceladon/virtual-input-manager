@@ -41,6 +41,16 @@ vInputDevice::vInputDevice()
     mqId = 0;
 }
 
+void vInputDevice::setVirtMode(bool mode)
+{
+    virt = mode;
+}
+
+bool vInputDevice::getVirtMode()
+{
+    return virt;
+}
+
 vInputDevice::~vInputDevice()
 {
     if (ufd > 0)
@@ -124,26 +134,26 @@ int vInputDevice::openUinputDev()
     return 0;
 }
 
-int vInputDevice::createInputDevice(uint16_t keyCode)
+int vInputDevice::createInputDevice(uint16_t keyCode, bool gvtdMode)
 {
     struct input_id uid = {};
     struct uinput_setup usetup = {};
 
-#if defined(ENABLE_HWKEY_EVENTS)
-    if (!getDevices(keyCode, &sourceDev))
-        virt = true;
-    else
-        virt = false;
-#else
-    virt = true;
-#endif
+    if (gvtdMode == true) {
+        if (!getDevices(keyCode, &sourceDev))
+            setVirtMode(true);
+        else
+            setVirtMode(false);
+    } else {
+       setVirtMode(true);
+    }
 
     if (openUinputDev() < 0) {
         cout << "Failed to open uinput device" << endl;
         return -1;
     }
 
-    if (!virt) {
+    if (getVirtMode() == false) {
         if (openSourceDev() < 0) {
             cout << "Failed to open source device" << endl;
             return -1;
@@ -286,6 +296,8 @@ static void sendKeyThread(vInputDevice *vD)
                 cout << "Invalid Ctrl option" << endl;
             }
         } else if (vD->type == POWER) {
+            system("sudo python3 ./wakeup.py");
+            usleep(800000); /* 800ms delay */
             vD->sendEvent(0x01, 0x074, 0x01);
             vD->sendEvent(0x00, 0x00, 0x00);
             if (data.bCtrl)
@@ -326,18 +338,19 @@ static void realDeviceThread(vInputDevice *vD)
                         cout << "could not get event" << endl;
                         break;
                     }
-
                     if ((!evBuf[j].type) && (!evBuf[j].code) &&
                                         (!evBuf[i].value)) {
-                        for (int k = 0; k <= j; k++) {
+                         if ((evBuf[0].code == 116) && (evBuf[0].type == 1) &&
+                                                      (evBuf[0].value == 1)) {
+                             system("sudo python3 ./wakeup.py");
+                             usleep(800000); /* 800ms delay */
+                         }
+                         for (int k = 0; k <= j; k++) {
                             vD->sendEvent(evBuf[k].type, evBuf[k].code,
                                                     evBuf[k].value);
-                            usleep(50);
-                        }
-
-                        system("sync");
-                        j = 0;
-                        continue;
+                         }
+                         j = 0;
+                         continue;
                     }
                     j++;
                 }
@@ -347,7 +360,7 @@ static void realDeviceThread(vInputDevice *vD)
 
 void vInputDevice::pollAndPushEvents()
 {
-    if (virt) {
+    if (getVirtMode() == true) {
         sendKeyThread(this);
     } else {
         thread sK(sendKeyThread, this);

@@ -26,6 +26,11 @@ class vInputManager {
     void processInputDevice(uint16_t);
     void getDevInfo(const char *, struct device *);
     int getDevices(unsigned, struct device *);
+    void setGvtdMode(bool mode);
+    bool getGvtdMode();
     int devCnt;
+
+ private:
+    bool bGvtdMode;
 };
 #endif  /*VINPUTMANAGER_H_*/
