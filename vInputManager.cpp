@@ -31,6 +31,26 @@
 
 #include "vInputManager.h"
 
+static string helpMsg =
+    "GVT-G mode: sudo ./vInputManger\n"\
+    "GVT-D mode: sudo ./vInputManger --gvtd \n";
+
+static void usage()
+{
+    cout << helpMsg << endl;
+    exit(0);
+}
+
+void vInputManager::setGvtdMode(bool mode)
+{
+    bGvtdMode = mode;
+}
+
+bool vInputManager::getGvtdMode()
+{
+   return bGvtdMode;
+}
+
 int vInputManager::checkDeviceExist(string devName)
 {
     for (int i = 0; i < MAX_DEV; i++) {
@@ -58,7 +78,7 @@ void vInputManager::processInputDevice(uint16_t keyCode)
 {
     vInputDevice vD;
 
-    if (vD.createInputDevice(keyCode) < 0) {
+    if (vD.createInputDevice(keyCode, getGvtdMode()) < 0) {
         cout << "processInputDevice: Failed to create input device" << endl;
         exit(0);
     }
@@ -79,12 +99,21 @@ void vInputManager::processInputDevice(uint16_t keyCode)
     }
 }
 
-int main()
+int main(int argc, char **argv)
 {
     string devName[2] = {"Power Button vm0", "Volume Button vm0"};
     uint16_t keyCode[2] = {KEY_POWER, KEY_VOLUMEUP};
     vInputManager vM;
 
+    if ((argc == 2) && !(strncmp(argv[1], "--gvtd", 7))) {
+        vM.setGvtdMode(true);
+    } else if (argc == 1) {
+        vM.setGvtdMode(false);
+    } else {
+        usage();
+        return 0;
+    }
+    
     vM.devCnt = 2;
     for (int i = 0; i < vM.devCnt; i++) {
         if (!vM.checkDeviceExist(devName[i])) {

@@ -33,7 +33,7 @@ class vInputDevice{
  public:
     vInputDevice();
     ~vInputDevice();
-    int createInputDevice(uint16_t);
+    int createInputDevice(uint16_t, bool);
     int createSymLink();
     void pollAndPushEvents();
     void sendEvent(uint16_t, uint16_t, int32_t);
@@ -41,6 +41,8 @@ class vInputDevice{
     int type;
     int fd[MAX_DEV];  /*fd for source /dev/input/eventX file*/
     struct device sourceDev;
+    void setVirtMode(bool mode);
+    bool getVirtMode();
 
  private:
     string uInputName;  /*virtual input device name*/
