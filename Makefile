@@ -5,13 +5,13 @@ MANAGER_SRCS := vInputManager.cpp vInputDevice.cpp
 
 APPL_SRCS := sendKey.cpp
 
-all : vinput-manager sendkey
+all : clean vinput-manager sendkey
 
 vinput-manager :
-	$(CC) $(MANAGER_SRCS) $(CFLAGS) -o vinput-manager
+	$(CC) $(MANAGER_SRCS) $(CFLAGS) -o ./bin/vinput-manager
 
 sendkey :
-	$(CC) $(APPL_SRCS) $(CFLAGS) -o sendkey
+	$(CC) $(APPL_SRCS) $(CFLAGS) -o ./bin/sendkey
 
 clean:
-	$(RM) vinput-manager sendkey
+	$(RM) ./bin/vinput-manager ./bin/sendkey

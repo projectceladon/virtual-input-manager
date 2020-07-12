@@ -13,7 +13,7 @@ Compile:  <br>
 # Follow below steps to check volume and power button functionality in CIV-GVTG
 
 Step 1:
-  *  Copy the vinput-manager and sendkey files into ~/civ/scripts directory  <br>
+  *  Pre-built binaries are placed in ~/civ/scripts directory  <br>
   *  $cd ~/civ/scripts/  <br>
   *  $chmod +x vinput-manager sendkey  <br>
 
@@ -37,11 +37,13 @@ Step 4:
 
 Note:<br>
   1. Use sendkey application only after launching CIV.<br>
-
+  2. To set device in to graphical mode.<br>
+        $sudo systemctl set-default graphical.target <br>
+        $sudo reboot <br>
 
 # Follow below steps to check volume and power button functionality in CIV-GVTD
 
-Step 1: Copy the vinput-manager and sendkey files into ~/civ/scripts folder <br>
+Step 1: Pre-built binaries are placed in ~/civ/scripts directory  <br>
   *  $cd ~/civ/scripts <br>
   *  $chmod +x vinput-manager sendkey <br>
 
