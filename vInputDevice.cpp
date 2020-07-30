@@ -39,6 +39,8 @@ vInputDevice::vInputDevice()
     type = 0;
     ufd = 0;
     mqId = 0;
+    virt = false;
+    sourceDev.count = 0;
 }
 
 void vInputDevice::setVirtMode(bool mode)
