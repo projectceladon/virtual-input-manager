@@ -8,10 +8,10 @@ APPL_SRCS := sendKey.cpp
 all : clean vinput-manager sendkey
 
 vinput-manager :
-	$(CC) $(MANAGER_SRCS) $(CFLAGS) -o ./bin/vinput-manager
+	$(CC) $(MANAGER_SRCS) $(CFLAGS) -o vinput-manager
 
 sendkey :
-	$(CC) $(APPL_SRCS) $(CFLAGS) -o ./bin/sendkey
+	$(CC) $(APPL_SRCS) $(CFLAGS) -o sendkey
 
 clean:
-	$(RM) ./bin/vinput-manager ./bin/sendkey
+	$(RM) vinput-manager sendkey
