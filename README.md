@@ -69,11 +69,27 @@ Step 5:<br>
 
 Step 6: Run sendkey application to verify volume and power key functionality in android <br>
   *  Volume Functionality:<br>
-            ./sendkey --vm 0 --volume up => Increases volume in CIV<br>
-            ./sendkey --vm 0 --volume down  => decreases volume in CIV<br>
+            $./sendkey --vm 0 --volume up => Increases volume in CIV<br>
+            $./sendkey --vm 0 --volume down  => decreases volume in CIV<br>
   *  Power Functionality:<br>
-            ./sendkey --vm 0 --power 0  => Suspend/Resume in CIV<br>
-            ./sendkey –vm 0 –power 5    => long press of power key for 5 seconds. Displays power options in android. <br>
+            $./sendkey --vm 0 --power 0  => Suspend/Resume in CIV<br>
+            $./sendkey –vm 0 –power 5    => long press of power key for 5 seconds. Displays power options in android. <br>
+
+
+# Steps to install g++ and configure
+
+  *  By default g++ version is 7.5.0 in Ubuntu 18.04 host OS. <br>
+  *  In case g++ version < 7.4, install manually latest version using below mentioned commands. <br>
+
+  *  $ sudo apt install software-properties-common <br>
+  *  $ sudo apt install gcc-7 g++-7 <br>
+  *  $ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 50 <br>
+  *  $ sudo update-alternatives --config g++ <br>
+  *  $ Select "g++-7" <br>
+
+  * command to check version <br>
+    $g++ --version <br>
 
 Note:<br>
-    1. Use sendkey application after launching CIV.<br>
+    1. Execute/Run vinput-manager before lunching CIV. <br>
+    2. Use sendkey application to send commands after launching CIV. <br>
