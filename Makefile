@@ -1,5 +1,5 @@
 CFLAGS := -I . -lpthread -Wall -Wpedantic -Wextra
-CC := g++
+CC := clang++
 
 MANAGER_SRCS := vInputManager.cpp vInputDevice.cpp
 
