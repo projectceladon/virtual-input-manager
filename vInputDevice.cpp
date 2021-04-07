@@ -269,9 +269,10 @@ int vInputDevice::getMsgQ()
     return mqId;
 }
 
-static void sendKeyThread(vInputDevice *vD)
+static void sendKeyThread(vInputDevice *vDev)
 {
     struct mQData data = {};
+    vInputDevice *vD = vDev;
     int mqId = vD->getMsgQ();
 
     while (true) {
