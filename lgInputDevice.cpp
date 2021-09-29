@@ -179,7 +179,7 @@ int lgInputDevice::createInputDevice(uint16_t keyCode, bool gvtdMode)
     dev.id.product = 0x1;
     dev.id.version = 1;
 
-    signed int touch_xres = 540;
+    signed int touch_xres = 600;
     signed int touch_yres = 960;
 
     /* single touch inputs */
