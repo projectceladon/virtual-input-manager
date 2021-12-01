@@ -32,8 +32,7 @@
 #include "lgInputManager.h"
 
 static string helpMsg =
-    "GVT-G mode: sudo ./vInputManger\n"\
-    "GVT-D mode: sudo ./vInputManger --gvtd \n";
+    "sudo ./lg-input-manager\n";
 
 static void usage()
 {
@@ -77,7 +76,7 @@ int lgInputManager::checkDeviceExist(string devName)
 void lgInputManager::processInputDevice(uint16_t keyCode)
 {
     lgInputDevice vD;
-    vD.mouseType = keyCode;
+    vD.deviceType = keyCode;
 
     if (vD.createInputDevice(keyCode, getGvtdMode()) < 0) {
         cout << "processInputDevice: Failed to create input device" << endl;
@@ -112,6 +111,7 @@ int main(int argc, char **argv)
         usage();
         return 0;
     }
+    /*number of virtual input device*/
     vM.devCnt = 4;
     for (int i = 0; i < vM.devCnt; i++) {
     vM.processInputDevice(i);

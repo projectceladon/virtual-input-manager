@@ -21,10 +21,10 @@
 #include <string>
 
 #define MAX_DEV 1024
-#define MOUSE_BUTTON_FILE_PATH "/tmp/input-lg"
+#define INPUT_DEVICE_FILE_PATH "/tmp/input-lg"
 
-//enum deviceType {MOUSE=3};
 #define MOUSE 3
+#define KEYBOARD 4
 using namespace std;
 
 struct device {
@@ -52,7 +52,7 @@ class lgInputDevice{
     void setVirtMode(bool mode);
     bool getVirtMode();
     int ufd;  /*fd for uinput device*/
-    int mouseType;
+    int deviceType; /*integrated input device*/
 
  private:
     string uInputName;  /*virtual input device name*/
