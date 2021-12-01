@@ -154,12 +154,18 @@ int lgInputDevice::createInputDevice(uint16_t keyCode, bool gvtdMode)
 
     char str[100];
 
-    sprintf(str, "input-looking-glass%d", mouseType);
+    sprintf(str, "input-looking-glass%d", deviceType);
     uInputName = str;
     struct uinput_user_dev dev;
+
+    /*Event type bits*/
     ioctl(ufd, UI_SET_EVBIT, EV_KEY);
     ioctl(ufd, UI_SET_EVBIT, EV_ABS);
     ioctl(ufd, UI_SET_EVBIT, EV_SYN);
+    ioctl(ufd, UI_SET_EVBIT, EV_MSC);
+    ioctl(ufd, UI_SET_EVBIT, EV_LED);
+
+    /*ABS bits code*/
     ioctl(ufd, UI_SET_ABSBIT, ABS_X);
     ioctl(ufd, UI_SET_ABSBIT, ABS_Y);
     ioctl(ufd, UI_SET_ABSBIT, ABS_MT_SLOT);
@@ -169,11 +175,190 @@ int lgInputDevice::createInputDevice(uint16_t keyCode, bool gvtdMode)
     ioctl(ufd, UI_SET_ABSBIT, ABS_MT_TRACKING_ID);
     ioctl(ufd, UI_SET_ABSBIT, ABS_MT_TOOL_TYPE);
     ioctl(ufd, UI_SET_PROPBIT, INPUT_PROP_DIRECT);
+
+    /*miscellaneous bits code*/
+    ioctl(ufd, UI_SET_MSCBIT, MSC_SCAN);
+
+    /*LED bits code*/
+    ioctl(ufd, UI_SET_LEDBIT, LED_NUML);
+    ioctl(ufd, UI_SET_LEDBIT, LED_CAPSL);
+    ioctl(ufd, UI_SET_LEDBIT, LED_SCROLLL);
+    ioctl(ufd, UI_SET_LEDBIT, LED_COMPOSE);
+    ioctl(ufd, UI_SET_LEDBIT, LED_KANA);
+
+    /*key bits code*/
     ioctl(ufd, UI_SET_KEYBIT, BTN_TOUCH);
+
+    ioctl(ufd, UI_SET_KEYBIT, KEY_RESERVED);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_ESC);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_1);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_2);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_3);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_4);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_5);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_6);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_7);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_8);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_9);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_0);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_MINUS);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_EQUAL);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_BACKSPACE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_TAB);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_Q);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_W);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_E);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_R);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_T);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_Y);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_U);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_I);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_O);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_P);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_LEFTBRACE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_RIGHTBRACE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_ENTER);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_LEFTCTRL);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_A);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_S);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_D);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_G);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_H);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_J);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_K);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_L);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_SEMICOLON);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_APOSTROPHE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_GRAVE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_LEFTSHIFT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_BACKSLASH);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_Z);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_X);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_C);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_V);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_B);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_N);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_M);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_COMMA);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_DOT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_SLASH);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_RIGHTSHIFT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPASTERISK);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_LEFTALT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_SPACE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_CAPSLOCK);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F1);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F2);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F3);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F4);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F5);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F6);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F7);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F8);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F9);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F10);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_NUMLOCK);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_SCROLLLOCK);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KP7);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KP8);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KP9);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPMINUS);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KP4);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KP5);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KP6);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPPLUS);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KP1);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KP2);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KP3);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KP0);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPDOT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_ZENKAKUHANKAKU);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_102ND);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F11);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F12);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_RO);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KATAKANA);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_HIRAGANA);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_HENKAN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KATAKANAHIRAGANA);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_MUHENKAN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPJPCOMMA);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPENTER);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_RIGHTCTRL);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPSLASH);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_SYSRQ);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_RIGHTALT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_LINEFEED);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_HOME);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_UP);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_PAGEUP);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_LEFT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_RIGHT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_END);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_DOWN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_PAGEDOWN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_INSERT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_DELETE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_MACRO);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_MUTE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_VOLUMEDOWN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_VOLUMEUP);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_POWER);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPEQUAL);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPPLUSMINUS);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_PAUSE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_SCALE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPCOMMA);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_HANGEUL);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_HANJA);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_YEN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_LEFTMETA);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_RIGHTMETA);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_COMPOSE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_STOP);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_AGAIN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_PROPS);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_UNDO);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_FRONT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_COPY);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_OPEN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_PASTE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_FIND);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_CUT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_HELP);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_CALC);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_SLEEP);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_WWW);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_COFFEE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_BACK);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_FORWARD);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_EJECTCD);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_NEXTSONG);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_PLAYPAUSE);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_PREVIOUSSONG);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_STOPCD);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_REFRESH);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_EDIT);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_SCROLLUP);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_SCROLLDOWN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPLEFTPAREN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_KPRIGHTPAREN);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F13);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F14);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F15);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F16);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F17);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F18);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F19);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F20);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F21);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F22);
+    ioctl(ufd, UI_SET_KEYBIT, KEY_F23);
 
     memset(&dev, 0, sizeof(dev));
     snprintf(dev.name, sizeof(dev.name), "IntelvTouch");
-    sprintf(dev.name, "input-looking-glass%d", mouseType);
+    sprintf(dev.name, "input-looking-glass%d", deviceType);
     dev.id.bustype = BUS_USB;
     dev.id.vendor  = 0x1;
     dev.id.product = 0x1;
@@ -207,9 +392,7 @@ int lgInputDevice::createInputDevice(uint16_t keyCode, bool gvtdMode)
     dev.absmax[ABS_MT_PRESSURE] = 0xff;
 
     write(ufd, &dev, sizeof(dev));
-    ioctl(ufd, UI_DEV_CREATE);
-
-    type = MOUSE;
+    ioctl(ufd, UI_DEV_CREATE);   
 
     return 0;
 }
@@ -262,7 +445,7 @@ int lgInputDevice::getMsgQ()
     key_t key = 0;
     char path[100];
     char cmd[100];
-    sprintf(path, "%s%d", MOUSE_BUTTON_FILE_PATH,mouseType);
+    sprintf(path, "%s%d", INPUT_DEVICE_FILE_PATH ,deviceType);
     sprintf(cmd, "touch %s",path);
     system(cmd);
     key = ftok(path, 99);
@@ -286,6 +469,7 @@ int lgInputDevice::getMsgQ()
     return mqId;
 }
 
+
 static void sendKeyThread(lgInputDevice *vDev)
 {
    struct mQData1 mD = {};
@@ -294,10 +478,10 @@ static void sendKeyThread(lgInputDevice *vDev)
     int mqId = vD->getMsgQ();
     while (true) {
             if (msgrcv(mqId, &mD, sizeof(struct mQData1), 1, 0) < 0) {
-                printf("error no: %s mousetype %d\n", strerror(errno), vD->mouseType);
+                printf("error no: %s mousetype %d\n", strerror(errno), vD->deviceType);
                 continue;
-	    }
-	    vD->sendEvent(mD.ev.type, mD.ev.code, mD.ev.value);
+            }
+            vD->sendEvent(mD.ev.type, mD.ev.code, mD.ev.value);
     }
 }
 
