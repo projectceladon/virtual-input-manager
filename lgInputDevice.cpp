@@ -164,6 +164,7 @@ int lgInputDevice::createInputDevice(uint16_t keyCode, bool gvtdMode)
     ioctl(ufd, UI_SET_EVBIT, EV_SYN);
     ioctl(ufd, UI_SET_EVBIT, EV_MSC);
     ioctl(ufd, UI_SET_EVBIT, EV_LED);
+    ioctl(ufd, UI_SET_EVBIT, EV_REL);
 
     /*ABS bits code*/
     ioctl(ufd, UI_SET_ABSBIT, ABS_X);
@@ -179,6 +180,12 @@ int lgInputDevice::createInputDevice(uint16_t keyCode, bool gvtdMode)
     /*miscellaneous bits code*/
     ioctl(ufd, UI_SET_MSCBIT, MSC_SCAN);
 
+    /*relative bits code*/
+    ioctl(ufd, UI_SET_RELBIT, REL_X);
+    ioctl(ufd, UI_SET_RELBIT, REL_Y);
+    ioctl(ufd, UI_SET_RELBIT, REL_WHEEL);
+    ioctl(ufd, UI_SET_RELBIT, REL_HWHEEL);
+
     /*LED bits code*/
     ioctl(ufd, UI_SET_LEDBIT, LED_NUML);
     ioctl(ufd, UI_SET_LEDBIT, LED_CAPSL);
@@ -188,6 +195,9 @@ int lgInputDevice::createInputDevice(uint16_t keyCode, bool gvtdMode)
 
     /*key bits code*/
     ioctl(ufd, UI_SET_KEYBIT, BTN_TOUCH);
+    ioctl(ufd, UI_SET_KEYBIT, BTN_LEFT);
+    ioctl(ufd, UI_SET_KEYBIT, BTN_RIGHT);
+    ioctl(ufd, UI_SET_KEYBIT, BTN_SIDE);
 
     ioctl(ufd, UI_SET_KEYBIT, KEY_RESERVED);
     ioctl(ufd, UI_SET_KEYBIT, KEY_ESC);
@@ -368,8 +378,9 @@ int lgInputDevice::createInputDevice(uint16_t keyCode, bool gvtdMode)
     signed int touch_yres = 960;
 
     /* single touch inputs */
-    dev.absmax[ABS_MT_SLOT] = 0;
-
+    dev.absmin[ABS_MT_SLOT] = 0;
+    dev.absmax[ABS_MT_SLOT] = 1;
+    
     dev.absmin[ABS_X] = 0;
     dev.absmax[ABS_X] = touch_xres;
 
