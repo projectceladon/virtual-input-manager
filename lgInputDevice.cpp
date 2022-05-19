@@ -385,8 +385,8 @@ int lgInputDevice::createInputDevice(uint16_t keyCode, bool gvtdMode)
     dev.absmin[ABS_PRESSURE] = 0;
     dev.absmax[ABS_PRESSURE] = 0xff;
 
-    dev.absmin[ABS_MT_TOUCH_MAJOR] = 0;
-    dev.absmax[ABS_MT_TOUCH_MAJOR] = 0xff;
+    // dev.absmin[ABS_MT_TOUCH_MAJOR] = 0;
+    // dev.absmax[ABS_MT_TOUCH_MAJOR] = 0xff;
 
     dev.absmin[ABS_MT_PRESSURE] = 0;
     dev.absmax[ABS_MT_PRESSURE] = 0xff;
