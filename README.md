@@ -60,12 +60,16 @@ Step 4: Launch vinput-manager <br>
   *  $sudo ./vinput-manager --gvtd <br>
 
 Step 5:<br>
-  *  Add below 3 lines under common_options variable in start_android_qcow2.sh script. <br>
+  *  Add below 3 lines under cmd field in ini file <br>
            -device virtio-input-host-pci,evdev=/dev/input/by-id/Power-Button-vm0 \    <br>
            -device virtio-input-host-pci,evdev=/dev/input/by-id/Volume-Button-vm0 \   <br>
            -qmp unix:./qmp-vinput-sock,server,nowait \ <br>
 
-  *  Launch CIV: $sudo ./scripts/start_android_qcow2.sh --gvtd <br>
+  *  eg [extra]
+	   #cmd=-monitor stdio
+	   cmd=-device virtio-input-host-pci,evdev=/dev/input/by-id/Power-Button-vm0 -device virtio-input-host-pci,evdev=/dev/input/by-id/Volume-Button-vm0 -qmp unix:./qmp-vinput-sock,server,nowait
+
+  *  Launch CIV: $sudo vm-manager -b civ-1 <br>
 
 Step 6: Run sendkey application to verify volume and power key functionality in android <br>
   *  Volume Functionality:<br>

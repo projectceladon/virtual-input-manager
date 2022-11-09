@@ -342,7 +342,7 @@ static void realDeviceThread(vInputDevice *vD)
                         break;
                     }
                     if ((!evBuf[j].type) && (!evBuf[j].code) &&
-                                        (!evBuf[i].value)) {
+                                        (!evBuf[j].value)) {
                          if ((evBuf[0].code == 116) && (evBuf[0].type == 1) &&
                                                       (evBuf[0].value == 1)) {
                              system("sudo python3 ./wakeup.py");
