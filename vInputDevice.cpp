@@ -263,7 +263,7 @@ int vInputDevice::getMsgQ()
     struct mQData data = {};
     int n = 1;
     while (n > 0) {
-        n = msgrcv(mqId, &data, sizeof(struct mQData), 1, IPC_NOWAIT);
+        n = msgrcv(mqId, &data, sizeof(struct mQData) - sizeof(long), 1, IPC_NOWAIT);
     }
 
     return mqId;
@@ -275,8 +275,13 @@ static void sendKeyThread(vInputDevice *vDev)
     vInputDevice *vD = vDev;
     int mqId = vD->getMsgQ();
 
+    if (mqId < 0) {
+            cout << "Failed to get msgq id" << endl;
+            return ;
+    }
+
     while (true) {
-        msgrcv(mqId, &data, sizeof(struct mQData), 1, 0);
+        msgrcv(mqId, &data, sizeof(struct mQData) - sizeof(long), 1, 0);
         if (vD->type == VOLUME) {
             switch (data.bCtrl) {
             case UP:
