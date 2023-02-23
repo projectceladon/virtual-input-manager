@@ -62,7 +62,7 @@ static void sendPowerEvent(int32_t ctrl)
         exit(0);
 
     buf.bCtrl = static_cast<uint32_t>(ctrl);
-    msgsnd(mqId, &buf, sizeof(buf), 0);
+    msgsnd(mqId, &buf, sizeof(buf) - sizeof(long), 0);
 }
 
 static void sendVolumeEvent(int32_t ctrl)
@@ -76,11 +76,11 @@ static void sendVolumeEvent(int32_t ctrl)
     switch (ctrl) {
     case UP:
         buf.bCtrl = UP;
-        msgsnd(mqId, &buf, sizeof(buf), 0);
+        msgsnd(mqId, &buf, sizeof(buf) - sizeof(long), 0);
         break;
     case DOWN:
         buf.bCtrl = DOWN;
-        msgsnd(mqId, &buf, sizeof(buf), 0);
+        msgsnd(mqId, &buf, sizeof(buf) - sizeof(long), 0);
         break;
     default:
         cout << "Invalid Volume control option" << endl;
