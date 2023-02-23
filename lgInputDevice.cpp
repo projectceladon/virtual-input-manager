@@ -42,6 +42,8 @@ lgInputDevice::lgInputDevice()
     mqId = 0;
     virt = false;
     sourceDev.count = 0;
+    mouseType = 0;
+    fd[MAX_DEV - 1] = {0};
 }
 
 void lgInputDevice::setVirtMode(bool mode)
@@ -280,7 +282,8 @@ int lgInputDevice::getMsgQ()
     struct input_event ev = {};
     int n = 1;
     while (n > 0) {
-        n = msgrcv(mqId, &ev, sizeof(struct input_event), 1, IPC_NOWAIT);
+	/*The msgsz argument contains the size of the message in bytes, excluding the length of the message type (4 byte long).*/
+        n = msgrcv(mqId, &ev, sizeof(struct input_event) - sizeof(long), 1, IPC_NOWAIT);
     }
 
     return mqId;
@@ -292,12 +295,18 @@ static void sendKeyThread(lgInputDevice *vDev)
     lgInputDevice *vD = vDev;
     vD->type = MOUSE;
     int mqId = vD->getMsgQ();
+
+    if (mqId < 0) {
+        cout << "Failed to get msgq id" << endl;
+        return ;
+    }
+
     while (true) {
-            if (msgrcv(mqId, &mD, sizeof(struct mQData1), 1, 0) < 0) {
-                printf("error no: %s mousetype %d\n", strerror(errno), vD->mouseType);
-                continue;
-	    }
-	    vD->sendEvent(mD.ev.type, mD.ev.code, mD.ev.value);
+        if (msgrcv(mqId, &mD, sizeof(struct mQData1) - sizeof(long), 1, 0) < 0) {
+            printf("error no: %s mousetype %d\n", strerror(errno), vD->mouseType);
+            continue;
+	}
+	vD->sendEvent(mD.ev.type, mD.ev.code, mD.ev.value);
     }
 }
 
