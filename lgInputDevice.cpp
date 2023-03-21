@@ -342,7 +342,9 @@ static void realDeviceThread(lgInputDevice *vD)
                          if ((evBuf[0].code == 116) && (evBuf[0].type == 1) &&
                                                       (evBuf[0].value == 1)) {
                              system("sudo python3 ./wakeup.py");
-                             usleep(800000); /* 800ms delay */
+                             if (usleep(800000) < 0) {
+                                 cout << "Failed to add 800ms delay" << endl;
+                             }
                          }
                          for (int k = 0; k <= j; k++) {
                             vD->sendEvent(evBuf[k].type, evBuf[k].code,
