@@ -288,7 +288,9 @@ static void sendKeyThread(vInputDevice *vDev)
                 vD->sendEvent(0x04, 0x04, 0xc4);
                 vD->sendEvent(0x01, KEY_VOLUMEUP, 0x01);
                 vD->sendEvent(0x00, 0x00, 0x00);
-                usleep(50000);
+                if (usleep(50000) < 0) {
+                    cout << "Failed to add 50ms delay" << endl;
+                }
                 vD->sendEvent(0x01, KEY_VOLUMEUP, 0x00);
                 vD->sendEvent(0x00, 0x00, 0x00);
                 break;
@@ -296,7 +298,9 @@ static void sendKeyThread(vInputDevice *vDev)
                 vD->sendEvent(0x04, 0x04, 0xc6);
                 vD->sendEvent(0x01, KEY_VOLUMEDOWN, 0x01);
                 vD->sendEvent(0x00, 0x00, 0x00);
-                usleep(50000);
+                if (usleep(50000) < 0) {
+                    cout << "Failed to add 50ms delay" << endl;
+                }
                 vD->sendEvent(0x01, KEY_VOLUMEDOWN, 0x00);
                 vD->sendEvent(0x00, 0x00, 0x00);
                 break;
@@ -305,13 +309,18 @@ static void sendKeyThread(vInputDevice *vDev)
             }
         } else if (vD->type == POWER) {
             system("sudo python3 ./wakeup.py");
-            usleep(800000); /* 800ms delay */
+            if (usleep(800000) < 0) {
+                cout << "Failed to add 800ms delay" << endl;
+            }
             vD->sendEvent(0x01, 0x074, 0x01);
             vD->sendEvent(0x00, 0x00, 0x00);
             if (data.bCtrl)
                 sleep(data.bCtrl);
-            else
-                usleep(50000);
+            else {
+                if (usleep(50000) < 0) {
+                    cout << "Failed to add 50ms delay" << endl;
+                }
+            }
 
             vD->sendEvent(0x01, 0x074, 0x00);
             vD->sendEvent(0x00, 0x00, 0x00);
@@ -351,7 +360,9 @@ static void realDeviceThread(vInputDevice *vD)
                          if ((evBuf[0].code == 116) && (evBuf[0].type == 1) &&
                                                       (evBuf[0].value == 1)) {
                              system("sudo python3 ./wakeup.py");
-                             usleep(800000); /* 800ms delay */
+                             if (usleep(800000) < 0) {
+                                 cout << "Failed to add 800ms delay" << endl;
+                             }
                          }
                          for (int k = 0; k <= j; k++) {
                             vD->sendEvent(evBuf[k].type, evBuf[k].code,
