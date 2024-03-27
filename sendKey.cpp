@@ -16,6 +16,7 @@
  */
 
 #include <string.h>
+#include <stdint.h>
 #include <iostream>
 
 #include "sendKey.h"
