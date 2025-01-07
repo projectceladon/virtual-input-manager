@@ -17,6 +17,7 @@
 
 #include <string.h>
 #include <iostream>
+#include <cstdint>
 
 #include "sendKey.h"
 
