@@ -281,7 +281,7 @@ static void sendKeyThread(vInputDevice *vDev)
     }
 
     while (true) {
-        msgrcv(mqId, &data, sizeof(struct mQData) - sizeof(long), 1, 0);
+        (void)msgrcv(mqId, &data, sizeof(struct mQData) - sizeof(long), 1, 0);
         if (vD->type == VOLUME) {
             switch (data.bCtrl) {
             case UP:
